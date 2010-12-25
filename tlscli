@@ -550,7 +550,6 @@ reference using one of the following syntaxes:
 
 For more information on the CORBA Telecom Log Service, see:
   http://www.omg.org/spec/TLOG/
-
 """
 
 SEPARATOR = '-' * 78
