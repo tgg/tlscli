@@ -112,7 +112,8 @@ class ObjectReferenceError(TelcoLogError):
     """Raised when an object reference is not valid."""
 
     def __init__(self, name):
-        TelcoLogError.__init__(self, 'object is not a valid %s reference!' % (name))
+        TelcoLogError.__init__(self, 'object is not a valid %s reference!' %
+                               (name))
 
 class ConnectionFailureError(TelcoLogError):
     """Exception raised when connections fails."""
