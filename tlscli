@@ -120,11 +120,10 @@ class ConnectionFailureError(TelcoLogError):
 
     CONNECTION_FAILURE = """cannot connect to remote Log or LogMgr.
 
-Use -ORBInitRef LogMgr=corbaname:iiop:1.2@MACHINE:PORT#NAME or
-    -ORBInitRef LogMgr=IOR:TEXT
+Use -ORBInitRef LogMgr=IOR:TEXT or
+    -ORBInitRef LogMgr=corbaloc:iiop:1.2@MACHINE:PORT/NAME or
+    -ORBInitRef LogMgr=corbaname:iiop:1.2@MACHINE:PORT#NAME or
  to specify the address of the LogMgr.
-Use ID to specify which Log to use in `info', `query', `retrieve', `delete'
-and `write' commands.
 
 For help, invoke with --help."""
 
@@ -544,9 +543,9 @@ HELP = """Usage: tlscli [ACTION]
 
 To specify how to connect to the TelecomLogService, specify a LogMgr initial
 reference using one of the following syntaxes:
-  -ORBInitRef LogMgr=corbaname:iiop:1.2@MACHINE:PORT#NAME
-  -ORBInitRef LogMgr=corbaloc:iiop:1.2@MACHINE:PORT/NAME
   -ORBInitRef LogMgr=IOR:TEXT
+  -ORBInitRef LogMgr=corbaloc:iiop:1.2@MACHINE:PORT/NAME
+  -ORBInitRef LogMgr=corbaname:iiop:1.2@MACHINE:PORT#NAME
 
 For more information on the CORBA Telecom Log Service, see:
   http://www.omg.org/spec/TLOG/
