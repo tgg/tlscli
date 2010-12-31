@@ -99,7 +99,7 @@ for the service (or the Name Service for ``corbaname``).
 
 Please read `The corbaloc and corbaname URLs chapter
 <http://www.ciaranmchale.com/corba-explained-simply/the-corbaloc-and-corbaname-urls.html>`_
-is the great online free book
+in the great online free book
 `CORBA Explained Simply <http://www.ciaranmchale.com/corba-explained-simply/>`_.
 
 Commands
