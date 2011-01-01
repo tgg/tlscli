@@ -572,7 +572,7 @@ if __name__ == '__main__':
     
     # Default operation when we have a valid reference is 'list'
     if len(sys.argv) == 1:
-        sys.argv[1:] = ['list']
+        die('missing action', help=True)
     
     # Parse arguments
     try:
