@@ -56,7 +56,7 @@ from omniORB import CORBA, any
 import DsLogAdmin
 
 # Change this after every release.
-_version = "0.8.0"
+_version = "0.8.1"
 
 # -- E X C E P T I O N S -----------------------------------------------------
 class TelcoLogError(Exception):

@@ -25,7 +25,7 @@ class generate_corba_stubs(install):
 
 setup(
     name='tlscli',
-    version='0.8.0',
+    version='0.8.1',
     author='Thomas Girard',
     author_email='thomas.g.girard@free.fr',
     url='https://launchpad.net/tlscli',
