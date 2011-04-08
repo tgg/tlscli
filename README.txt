@@ -2,7 +2,7 @@
 Telecom Log Service Client
 ==========================
 
-Telecom Log Service Client (``tlscli``) is a command-line client for
+Telecom Log Service Client (``tlscli``) is a Python command-line client for
 CORBA Telecom Log Service.
 
 Using you can:
@@ -14,7 +14,7 @@ Using you can:
 For more information on the TelecomLogService, see:
   http://www.omg.org/spec/TLOG/
 
-The project is managed on Launchpad:
+The project is hosted on Launchpad:
   https://launchpad.net/tlscli
 
 Example
