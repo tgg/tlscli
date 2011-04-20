@@ -3,7 +3,7 @@
 #
 # A Python Text User Interface client for CORBA Telecom Log Service.
 #
-# Copyright © 2010, Thomas Girard <thomas.g.girard@free.fr>
+# Copyright © 2010-2011, Thomas Girard <thomas.g.girard@free.fr>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -216,6 +216,10 @@ class RecordIterator:
         for record in self._list:
             yield Record(record)
 
+        # obey Python iterator protocol: do not allow anything to be returned
+        # after StopIteration was raised
+        self._list = []
+
         if not self._iterator is None:
             position = 0
 
@@ -223,12 +227,17 @@ class RecordIterator:
                 rl = self._iterator.get(position, self._how_many)
 
                 if len(rl) == 0:
+                    # we're done with the CORBA iterator, destroy it
+                    self._iterator.destroy()
+                    # and honor Python iterator protocol
+                    self._iterator = None
                     break
 
-                for record in rl:
-                    yield Record(record)
+                else:
+                    for record in rl:
+                        yield Record(record)
 
-                position += len(rl)
+                    position += len(rl)
 
         raise StopIteration
 
@@ -237,10 +246,12 @@ class Log:
 
     Attributes:
         _log -- the wrapped log
+        _orb -- the ORB
     """
 
     GRAMMAR = 'EXTENDED_TCL'
     FORMAT = """id: %d
+object-reference: %s
 QoS: %s
 max-record-life: %s
 max-size: %s
@@ -267,11 +278,12 @@ week-mask: %s"""
              32: 'F',
              64: 'S' }
 
-    def __init__(self, log):
+    def __init__(self, log, orb):
         if log is None:
             raise ObjectReferenceError('DsLogAdmin::Log')
 
         self._log = log
+        self._orb = orb
 
     @corba_call
     def qos(self):
@@ -363,14 +375,17 @@ week-mask: %s"""
 
     @staticmethod
     def _str_to_time(date):
-        for fmt in ('%c', '%x', '%X', '%Y%m%d %H:%M:%S',
-                    '%Y%m%d %H:%M', '%Y%m%d'):
-            try:
-                return time.mktime(time.strptime(date, fmt))
-            except ValueError:
-                pass
-            except OverflowError:
-                pass
+        if date == 'now':
+            return time.mktime(time.localtime())
+        else:
+            for fmt in ('%c', '%x', '%X', '%Y%m%d %H:%M:%S',
+                        '%Y%m%d %H:%M', '%Y%m%d'):
+                try:
+                    return time.mktime(time.strptime(date, fmt))
+                except ValueError:
+                    pass
+                except OverflowError:
+                    pass
 
         raise InvalidArgumentValueError('date', date)
 
@@ -449,6 +464,7 @@ week-mask: %s"""
     def __str__(self):
         """Display information on this log"""
     	return Log.FORMAT % (self._log.id(),
+                             self._orb.object_to_string(self._log),
                              self.qos(),
                              self.max_record_life(),
                              self.max_size(),
@@ -468,12 +484,14 @@ class LogFactory:
 
     Attributes:
         _logmgr -- the wrapped log manager
+        _orb    -- the ORB
     """
-    def __init__(self, logmgr):
+    def __init__(self, logmgr, orb):
         if logmgr is None:
             raise ObjectReferenceError('DsLogAdmin::LogMgr')
 
         self._logmgr = logmgr
+        self._orb = orb
 
     @corba_call
     def list(self):
@@ -505,7 +523,7 @@ class LogFactory:
         return log
 
     def get(self, id):
-        return Log(self._get(id))
+        return Log(self._get(id), self._orb)
 
     @staticmethod
     @corba_call
@@ -517,7 +535,7 @@ class LogFactory:
         except CORBA.BAD_PARAM:
             raise TelcoLogError('cannot resolve LogMgr initial reference')
 
-        return LogFactory(log_mgr)
+        return LogFactory(log_mgr, orb)
 
 
 # -- M A I N   A N D   H E L P E R   F U N C T I O N S -----------------------
