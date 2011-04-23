@@ -344,7 +344,10 @@ week-mask: %s"""
 
     @corba_call
     def write(self, content):
-        array = [any.to_any(content)]
+        if isinstance(content, (tuple, list)):
+            array = map(lambda x: any.to_any(x), content)
+        else:
+            array = [any.to_any(content)]
 
         try:
             self._log.write_records(array)
