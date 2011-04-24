@@ -53,7 +53,7 @@
 import time
 import sys
 from omniORB import CORBA, any
-import DsLogAdmin
+import DsLogAdmin, DsEventLogAdmin
 
 # Change this after every release.
 _version = "0.8.1"
@@ -502,18 +502,27 @@ class LogFactory:
         return self._logmgr.list_logs_by_id()
 
     @corba_call
-    def create(self, max_size=0, wrap=True):
-        basiclogfactory = self._logmgr._narrow(DsLogAdmin.BasicLogFactory)
+    def create(self, max_size=0, wrap=True, thresholds=[100]):
+        logfactory = self._logmgr._narrow(DsLogAdmin.BasicLogFactory)
+        is_basic = True
 
-        if basiclogfactory is None:
-            raise ObjectReferenceError('DsLogAdmin::BasicLogFactory')
+        if logfactory is None:
+            is_basic = False
+            logfactory = self._logmgr._narrow(DsEventLogAdmin.EventLogFactory)
+
+            if logfactory is None:
+                raise ObjectReferenceError('DsLogAdmin::BasicLogFactory')
 
         if wrap:
             fullaction = DsLogAdmin.wrap
         else:
             fullaction = DsLogAdmin.halt
 
-        log, id = basiclogfactory.create(fullaction, max_size)
+        if is_basic:
+            log, id = logfactory.create(fullaction, max_size)
+        else:
+            log, id = logfactory.create(fullaction, max_size, thresholds)
+
         return log
 
     @corba_call
@@ -548,7 +557,7 @@ Copyright © 2010, 2011 Thomas Girard <thomas.g.girard@free.fr>
 """ % (_version)
 
 HELP = """Usage: tlscli [ACTION]
-  create\tcreate a new log and print its id [BasicLogFactory only]
+  create\tcreate a new log and print its id [{Basic,Event}LogFactory only]
   list  \tlist available log ids
   info ID...\tdisplay information on logs with id ID
   query CONSTRAINT from ID...
