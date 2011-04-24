@@ -36,10 +36,12 @@
 
 module DsEventLogAdmin
 {
-	interface EventLog : DsLogAdmin::Log,
+	interface EventLog :
+		DsLogAdmin::Log,
 		CosEventChannelAdmin::EventChannel {};
 
-	interface EventLogFactory : DsLogAdmin::LogMgr,
+	interface EventLogFactory :
+		DsLogAdmin::LogMgr,
 		CosEventChannelAdmin::ConsumerAdmin	
 	{
 		EventLog create (in DsLogAdmin::LogFullActionType full_action,
