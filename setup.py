@@ -1,26 +1,33 @@
+import sys
+
 from distutils.core import setup
 from distutils.command.install import install
 from distutils.errors import DistutilsExecError
 
 import os.path
 
-def compile_idl(filename, includes, outputdir):
-    print 'compiling %s into %s' % (filename, outputdir)
+def compile_idl(filenames, includes, outputdir):
+    # TODO Debian specific
+    sys.path.append("/usr/lib/omniidl")
 
-    try:
-        import omniidl.main
-        omniidl.main.main(['ignored', '-bpython'] +
-                          ['-I' + path for path in includes] +
-                          ['-C' + outputdir, filename])
-    except ImportError:
-        raise DistutilsExecError('omniidl not available')
+    for filename in filenames:
+        print 'compiling %s into %s' % (filename, outputdir)
+
+        try:
+            # TODO Debian specific
+            import _omniidl
+            import omniidl.main
+            omniidl.main.main(['ignored', '-bpython'] +
+                              ['-I' + path for path in includes] +
+                              ['-C' + outputdir, filename])
+        except ImportError, e:
+            raise DistutilsExecError('omniidl not available')
 
 class generate_corba_stubs(install):
     def run(self):
         install.run(self)
-        compile_idl('DsLogAdmin.idl',
-                    [os.path.join(self.install_base,
-                                  'share', 'idl', 'omniORB', 'COS')],
+        compile_idl(['DsLogAdmin.idl', 'DsEventLogAdmin.idl'],
+                    [os.path.join('/usr', 'share', 'idl', 'omniORB', 'COS')],
                     self.install_lib)
 
 setup(
