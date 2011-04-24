@@ -53,6 +53,9 @@
 import time
 import sys
 from omniORB import CORBA, any
+import dateutil.parser
+from datetime import datetime
+
 import DsLogAdmin, DsEventLogAdmin
 
 # Change this after every release.
@@ -378,19 +381,20 @@ week-mask: %s"""
 
     @staticmethod
     def _str_to_time(date):
-        if date == 'now':
-            return time.mktime(time.localtime())
-        else:
-            for fmt in ('%c', '%x', '%X', '%Y%m%d %H:%M:%S',
-                        '%Y%m%d %H:%M', '%Y%m%d'):
-                try:
-                    return time.mktime(time.strptime(date, fmt))
-                except ValueError:
-                    pass
-                except OverflowError:
-                    pass
+        now = datetime.now()
 
-        raise InvalidArgumentValueError('date', date)
+        if date == 'now':
+            dt = now
+        elif date == 'today':
+            dt = now.replace(hour=0,minute=0,second=0,microsecond=0)
+        elif date == 'yesterday':
+            dt = now.replace(hour=0,minute=0,second=0,microsecond=0,day=now.day - 1)
+        elif date == 'tomorrow':
+            dt = now.replace(hour=0,minute=0,second=0,microsecond=0,day=now.day + 1)
+        else:
+            dt = dateutil.parser.parse(date)
+
+        return time.mktime(dt.timetuple())
 
     @corba_call
     def retrieve(self, count, date):
