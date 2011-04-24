@@ -176,7 +176,7 @@ class Record:
 
     """
 
-    FORMAT = 'id: %d\ntime: %s\nattributes: %s\ninfo: %s'
+    FORMAT = 'id: %d\ntime: %s\ncorba-time: %d\nattributes: %s\ninfo: %s'
 
     # CORBA Time to UNIX time, see:
     # http://www.omniorb-support.com/pipermail/omniorb-list/2007-June/028657.html
@@ -195,6 +195,7 @@ class Record:
     def __str__(self):
         return Record.FORMAT % (self._record.id,
                                 Record._time(self._record.time),
+                                self._record.time,
                                 str(self._record.attr_list),
                                 str(any.from_any(self._record.info)))
 
