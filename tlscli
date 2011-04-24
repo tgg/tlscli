@@ -56,7 +56,7 @@ from omniORB import CORBA, any
 import dateutil.parser
 from datetime import datetime
 
-import DsLogAdmin, DsEventLogAdmin
+import DsLogAdmin, DsEventLogAdmin, DsNotifyLogAdmin
 
 # Change this after every release.
 _version = "0.8.1"
@@ -494,6 +494,13 @@ class LogFactory:
         _logmgr -- the wrapped log manager
         _orb    -- the ORB
     """
+
+    SUPPORTED_FACTORIES = {
+        'notify': DsNotifyLogAdmin.NotifyLogFactory,
+        'event': DsEventLogAdmin.EventLogFactory,
+        'basic': DsLogAdmin.BasicLogFactory
+    }
+
     def __init__(self, logmgr, orb):
         if logmgr is None:
             raise ObjectReferenceError('DsLogAdmin::LogMgr')
@@ -508,25 +515,26 @@ class LogFactory:
 
     @corba_call
     def create(self, max_size=0, wrap=True, thresholds=[100]):
-        logfactory = self._logmgr._narrow(DsLogAdmin.BasicLogFactory)
-        is_basic = True
+        for name, cls in LogFactory.SUPPORTED_FACTORIES.iteritems():
+            logfactory = self._logmgr._narrow(cls)
+
+            if logfactory is not None:
+                break
 
         if logfactory is None:
-            is_basic = False
-            logfactory = self._logmgr._narrow(DsEventLogAdmin.EventLogFactory)
-
-            if logfactory is None:
-                raise ObjectReferenceError('DsLogAdmin::BasicLogFactory')
+            raise ObjectReferenceError('DsLogAdmin::BasicLogFactory')
 
         if wrap:
             fullaction = DsLogAdmin.wrap
         else:
             fullaction = DsLogAdmin.halt
 
-        if is_basic:
+        if name == 'basic':
             log, id = logfactory.create(fullaction, max_size)
-        else:
+        elif name == 'event':
             log, id = logfactory.create(fullaction, max_size, thresholds)
+        elif name == 'notify':
+            log, id = logfactory.create(fullaction, max_size, thresholds, [], [])
 
         return log
 
@@ -562,7 +570,7 @@ Copyright © 2010, 2011 Thomas Girard <thomas.g.girard@free.fr>
 """ % (_version)
 
 HELP = """Usage: tlscli [ACTION]
-  create\tcreate a new log and print its id [{Basic,Event}LogFactory only]
+  create\tcreate a new log and print its id
   list  \tlist available log ids
   info ID...\tdisplay information on logs with id ID
   query CONSTRAINT from ID...

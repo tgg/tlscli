@@ -78,7 +78,8 @@ generated at install time.
 
 To run ``tlscli``, you need a Telecom Log Service running somewhere. For
 instance you can use ``tao_tls_basic``, the Basic Telecom Log Service
-provided with `TAO <http://www.cs.wustl.edu/~schmidt/TAO.html>`_.
+provided with `TAO <http://www.cs.wustl.edu/~schmidt/TAO.html>`_, as
+well as ``tao_tls_event`` and ``tao_tls_notify``.
 
 Running
 =======
@@ -105,8 +106,8 @@ in the great online free book
 Commands
 ========
 
-Creating a new log (*basic log only*)
--------------------------------------
+Creating a new log
+------------------
 To create a new log, use ``tlscli create``. This will return the id of the
 newly created log.
 

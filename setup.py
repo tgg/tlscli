@@ -26,8 +26,8 @@ def compile_idl(filenames, includes, outputdir):
 class generate_corba_stubs(install):
     def run(self):
         install.run(self)
-        compile_idl(['DsLogAdmin.idl', 'DsEventLogAdmin.idl'],
-                    [os.path.join('/usr', 'share', 'idl', 'omniORB', 'COS')],
+        compile_idl(['DsLogAdmin.idl', 'DsEventLogAdmin.idl', 'DsNotifyLogAdmin.idl'],
+                    [os.path.join('/usr', 'share', 'idl', 'omniORB', 'COS'), '.'],
                     self.install_lib)
 
 setup(
@@ -41,6 +41,7 @@ setup(
     long_description=open('README.txt').read(),
     scripts=['tlscli'],
     cmdclass={'install': generate_corba_stubs},
+    requires=['dateutil.parser'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
