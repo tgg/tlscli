@@ -59,7 +59,7 @@ from datetime import datetime
 import DsLogAdmin, DsEventLogAdmin, DsNotifyLogAdmin
 
 # Change this after every release.
-_version = "0.8.1"
+_version = "1.0.0"
 
 # -- E X C E P T I O N S -----------------------------------------------------
 class TelcoLogError(Exception):

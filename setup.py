@@ -1,4 +1,6 @@
+import os.path
 import sys
+import subprocess
 
 from distutils.core import setup
 from distutils.command.install import install
@@ -6,15 +8,23 @@ from distutils.errors import DistutilsExecError
 
 import os.path
 
+def get_omniorb_cos_path():
+    pkg_config = subprocess.Popen(['pkg-config',
+                                   '--variable=idldir',
+                                   'omniCOS4'],
+                                  stdout=subprocess.PIPE)
+    (out, err) = pkg_config.communicate()
+    return out.rstrip()
+
 def compile_idl(filenames, includes, outputdir):
-    # TODO Debian specific
-    sys.path.append("/usr/lib/omniidl")
+    # This is Debian specific
+    if os.path.isdir('/usr/lib/omniidl'):
+        sys.path.append('/usr/lib/omniidl')
 
     for filename in filenames:
         print 'compiling %s into %s' % (filename, outputdir)
 
         try:
-            # TODO Debian specific
             import _omniidl
             import omniidl.main
             omniidl.main.main(['ignored', '-bpython'] +
@@ -27,12 +37,12 @@ class generate_corba_stubs(install):
     def run(self):
         install.run(self)
         compile_idl(['DsLogAdmin.idl', 'DsEventLogAdmin.idl', 'DsNotifyLogAdmin.idl'],
-                    [os.path.join('/usr', 'share', 'idl', 'omniORB', 'COS'), '.'],
+                    [get_omniorb_cos_path(), '.'],
                     self.install_lib)
 
 setup(
     name='tlscli',
-    version='0.8.1',
+    version='1.0.0',
     author='Thomas Girard',
     author_email='thomas.g.girard@free.fr',
     url='https://launchpad.net/tlscli',
