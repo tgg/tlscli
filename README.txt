@@ -72,14 +72,27 @@ This creates a new log with id 0, then write a new log record to it with text ``
 Prerequisites
 =============
 
-To install ``tlscli``, you need a working installation of
-`omniORBpy <http://omniorb.sourceforge.net/>`_. Indeed CORBA stubs are
-generated at install time.
+To install ``tlscli``, you need:
+ * a working installation of
+   `omniORBpy <http://omniorb.sourceforge.net/>`_. Indeed CORBA stubs are
+   generated at install time.
+ * `python-dateutil <http://niemeyer.net/python-dateutil>`_
 
-To run ``tlscli``, you need a Telecom Log Service running somewhere. For
-instance you can use ``tao_tls_basic``, the Basic Telecom Log Service
-provided with `TAO <http://www.cs.wustl.edu/~schmidt/TAO.html>`_, as
-well as ``tao_tls_event`` and ``tao_tls_notify``.
+To proceed to installation, run the following command from where you unpacked
+``tlscli``::
+
+  me@mymachine$ python setup.py install --user
+
+This will automatically compile stubs, and install everything into
+your ``$HOME/.local`` (``tlscli`` itself will be in ``$HOME/.local/bin``).
+
+To run ``tlscli``, you need a Telecom Log Service running somewhere.
+``tlscli`` is known to work with the following implementations:
+
+ * ``tao_tls_basic``, ``tao_tls_event`` and ``tao_tls_notify`` provided
+   with `TAO <http://www.cs.wustl.edu/~schmidt/TAO.html>`_
+ * ``tlserl``, an Erlang implementation available on
+   `bitbucket <https://bitbucket.org/tgg/tlserl/>`_
 
 Running
 =======
