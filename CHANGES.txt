@@ -14,7 +14,7 @@ CHANGES
 
 * Add CORBA time in ``query`` and ``retrieve`` actions.
 
-* Fix lp:694568, lp:696147, lp:694726.
+* Fix lp:694568, lp:696147, lp:694726, lp:770440.
 
 * Enhance installation process.
 

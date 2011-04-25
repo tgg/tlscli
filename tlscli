@@ -193,10 +193,12 @@ class Record:
         return time.ctime(secs)
 
     def __str__(self):
+        attributes = '; '.join([ '%s: %s' %(r.name, any.from_any(r.value))
+                                 for r in self._record.attr_list ])
         return Record.FORMAT % (self._record.id,
                                 Record._time(self._record.time),
                                 self._record.time,
-                                str(self._record.attr_list),
+                                '['+attributes+']',
                                 str(any.from_any(self._record.info)))
 
 class RecordIterator:
