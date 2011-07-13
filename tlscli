@@ -56,15 +56,19 @@ from omniORB import CORBA, any
 import dateutil.parser
 from datetime import datetime
 
-import DsLogAdmin, DsEventLogAdmin, DsNotifyLogAdmin
+import DsLogAdmin
+import DsEventLogAdmin
+import DsNotifyLogAdmin
 
 # Change this after every release.
 _version = "1.0.0"
+
 
 # -- E X C E P T I O N S -----------------------------------------------------
 class TelcoLogError(Exception):
     """Base class for exceptions in this module."""
     pass
+
 
 class CORBAError(TelcoLogError):
     def __init__(self, cause, context):
@@ -75,35 +79,40 @@ class CORBAError(TelcoLogError):
         return 'an error occured when invoking %s: %s' % (self._context,
                                                           self._cause)
 
+
 class StateError(TelcoLogError):
     """Raised when the state of the log does not allow requested operation."""
 
     def __init__(self, message):
         TelcoLogError.__init__(self, message)
 
+
 class ArgumentError(Exception):
     """Raised when there is a problem with an argument."""
     pass
+
 
 class MissingArgumentError(ArgumentError):
     """Raised when an argument is missing."""
 
     def __init__(self, name):
-        ArgumentError.__init__(self, 'missing argument for `%s\'' %(name))
+        ArgumentError.__init__(self, 'missing argument for `%s\'' % (name))
+
 
 class InvalidArgumentValueError(ArgumentError):
     """Raised when an argument value is incorrect."""
 
     def __init__(self, name, value):
         """Create a new `InvalidArgumentValueError' exception.
-        
+
         Arguments:
         name -- incorrect argument name
         value -- incorrect argument value
-        
+
         """
         ArgumentError.__init__(self, 'invalid value for `%s\': `%s\'' %
                                (name, str(value)))
+
 
 class InvalidConstraintError(ArgumentError):
     """Raised when a constraint is not valid."""
@@ -111,12 +120,14 @@ class InvalidConstraintError(ArgumentError):
     def __init__(self, constraint):
         ArgumentError.__init__(self, 'invalid constraint: %s' % (constraint))
 
+
 class ObjectReferenceError(TelcoLogError):
     """Raised when an object reference is not valid."""
 
     def __init__(self, name):
         TelcoLogError.__init__(self, 'object is not a valid %s reference!' %
                                (name))
+
 
 class ConnectionFailureError(TelcoLogError):
     """Exception raised when connections fails."""
@@ -133,16 +144,17 @@ For help, invoke with --help."""
     def __init__(self):
         TelcoLogError.__init__(self, ConnectionFailureError.CONNECTION_FAILURE)
 
+
 class IdError(TelcoLogError):
     """Raised when an id is not found."""
 
     def __init__(self, id, type):
         """Create a new `IdError' exception.
-        
+
         Arguments:
         id   -- id that was not found
         type -- type name
-        
+
         """
         TelcoLogError.__init__(self, '%s with id %d not found!' % (type, id))
 
@@ -179,7 +191,7 @@ class Record:
     FORMAT = 'id: %d\ntime: %s\ncorba-time: %d\nattributes: %s\ninfo: %s'
 
     # CORBA Time to UNIX time, see:
-    # http://www.omniorb-support.com/pipermail/omniorb-list/2007-June/028657.html
+    # http://omniorb-support.com/pipermail/omniorb-list/2007-June/028657.html
     UNIX_TO_UTC_OFFSET_SECS = 12219292800L
 
     def __init__(self, record):
@@ -193,13 +205,14 @@ class Record:
         return time.ctime(secs)
 
     def __str__(self):
-        attributes = '; '.join([ '%s: %s' %(r.name, any.from_any(r.value))
-                                 for r in self._record.attr_list ])
+        attributes = '; '.join(['%s: %s' % (r.name, any.from_any(r.value))
+                                for r in self._record.attr_list])
         return Record.FORMAT % (self._record.id,
                                 Record._time(self._record.time),
                                 self._record.time,
-                                '['+attributes+']',
+                                '[' + attributes + ']',
                                 str(any.from_any(self._record.info)))
+
 
 class RecordIterator:
     """Iterator over log records.
@@ -247,6 +260,7 @@ class RecordIterator:
 
         raise StopIteration
 
+
 class Log:
     """Wrap a DsLogAdmin::Log object reference.
 
@@ -272,17 +286,17 @@ availability-status: { %s }
 capacity-alarm-thresholds: %s
 week-mask: %s"""
 
-    QOS = { DsLogAdmin.QoSNone: 'none',
-            DsLogAdmin.QoSFlush: 'flush',
-            DsLogAdmin.QoSReliability: 'reliability' }
+    QOS = {DsLogAdmin.QoSNone: 'none',
+           DsLogAdmin.QoSFlush: 'flush',
+           DsLogAdmin.QoSReliability: 'reliability'}
 
-    DAYS = {  1: 'S',
-              2: 'M',
-              4: 'T',
-              8: 'W',
-             16: 'T',
-             32: 'F',
-             64: 'S' }
+    DAYS = {1: 'S',
+            2: 'M',
+            4: 'T',
+            8: 'W',
+            16: 'T',
+            32: 'F',
+            64: 'S'}
 
     def __init__(self, log, orb):
         if log is None:
@@ -389,11 +403,13 @@ week-mask: %s"""
         if date == 'now':
             dt = now
         elif date == 'today':
-            dt = now.replace(hour=0,minute=0,second=0,microsecond=0)
+            dt = now.replace(hour=0, minute=0, second=0, microsecond=0)
         elif date == 'yesterday':
-            dt = now.replace(hour=0,minute=0,second=0,microsecond=0,day=now.day - 1)
+            dt = now.replace(hour=0, minute=0, second=0, microsecond=0,
+                             day=now.day - 1)
         elif date == 'tomorrow':
-            dt = now.replace(hour=0,minute=0,second=0,microsecond=0,day=now.day + 1)
+            dt = now.replace(hour=0, minute=0, second=0, microsecond=0,
+                             day=now.day + 1)
         else:
             dt = dateutil.parser.parse(date)
 
@@ -473,7 +489,7 @@ week-mask: %s"""
     @corba_call
     def __str__(self):
         """Display information on this log"""
-    	return Log.FORMAT % (self._log.id(),
+        return Log.FORMAT % (self._log.id(),
                              self._orb.object_to_string(self._log),
                              self.qos(),
                              self.max_record_life(),
@@ -489,6 +505,7 @@ week-mask: %s"""
                              self.capacity_alarm_thresholds(),
                              self.week_mask())
 
+
 class LogFactory:
     """Wrap a DsLogAdmin::LogMgr.
 
@@ -500,8 +517,7 @@ class LogFactory:
     SUPPORTED_FACTORIES = {
         'notify': DsNotifyLogAdmin.NotifyLogFactory,
         'event': DsEventLogAdmin.EventLogFactory,
-        'basic': DsLogAdmin.BasicLogFactory
-    }
+        'basic': DsLogAdmin.BasicLogFactory}
 
     def __init__(self, logmgr, orb):
         if logmgr is None:
@@ -536,7 +552,8 @@ class LogFactory:
         elif name == 'event':
             log, id = logfactory.create(fullaction, max_size, thresholds)
         elif name == 'notify':
-            log, id = logfactory.create(fullaction, max_size, thresholds, [], [])
+            log, id = logfactory.create(fullaction, max_size, thresholds,
+                                        [], [])
 
         return log
 
@@ -603,10 +620,13 @@ For more information on the CORBA Telecom Log Service, see:
 
 SEPARATOR = '-' * 78
 
+
 def die(reason, error_code=1, help=False):
     print >> sys.stderr, 'tlscli: %s' % (str(reason))
-    if help: print HELP
+    if help:
+        print HELP
     sys.exit(error_code)
+
 
 def all_digits(sequence, what):
     digits = filter(lambda x: x.isdigit(), sequence)
@@ -616,14 +636,15 @@ def all_digits(sequence, what):
 
     return digits
 
+
 if __name__ == '__main__':
     # Initialize the ORB
     orb = CORBA.ORB_init(sys.argv, CORBA.ORB_ID)
-    
+
     # No default operation
     if len(sys.argv) == 1:
         die('missing action', help=True)
-    
+
     # Parse arguments
     try:
         if sys.argv[1] in ['help', '-h', '-?', '-help', '--help']:
