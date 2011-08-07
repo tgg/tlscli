@@ -52,7 +52,7 @@
 
 import time
 import sys
-from omniORB import CORBA, any
+from omniORB import CORBA, any as corba_any
 import dateutil.parser
 from datetime import datetime
 
@@ -205,13 +205,14 @@ class Record:
         return time.ctime(secs)
 
     def __str__(self):
-        attributes = '; '.join(['%s: %s' % (r.name, any.from_any(r.value))
+        attributes = '; '.join(['%s: %s' % (r.name,
+                                            corba_any.from_any(r.value))
                                 for r in self._record.attr_list])
         return Record.FORMAT % (self._record.id,
                                 Record._time(self._record.time),
                                 self._record.time,
                                 '[' + attributes + ']',
-                                str(any.from_any(self._record.info)))
+                                str(corba_any.from_any(self._record.info)))
 
 
 class RecordIterator:
@@ -365,9 +366,9 @@ week-mask: %s"""
     @corba_call
     def write(self, content):
         if isinstance(content, (tuple, list)):
-            array = map(lambda x: any.to_any(x), content)
+            array = map(lambda x: corba_any.to_any(x), content)
         else:
-            array = [any.to_any(content)]
+            array = [corba_any.to_any(content)]
 
         try:
             self._log.write_records(array)
