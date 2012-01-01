@@ -594,7 +594,7 @@ tlscli is free software; see LICENSE.txt for redistribution and use conditions.
 tlscli comes with ABSOLUTELY NO WARRANTY.
 """ % (_version)
 
-HELP = """Usage: tlscli [ACTION]
+HELP = """Usage: tlscli ACTION
   create\tcreate a new log and print its id
   list  \tlist available log ids
   info ID...\tdisplay information on logs with id ID
