@@ -14,6 +14,10 @@ def get_omniorb_cos_path():
                                    'omniCOS4'],
                                   stdout=subprocess.PIPE)
     (out, err) = pkg_config.communicate()
+
+    if pkg_config.returncode != 0:
+        raise EnvironmentError('Can''t find where to look for TimeBase.idl!')
+
     return out.rstrip()
 
 def compile_idl(filenames, includes, outputdir):
