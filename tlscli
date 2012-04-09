@@ -3,7 +3,7 @@
 #
 # A Python Text User Interface client for CORBA Telecom Log Service.
 #
-# Copyright © 2010-2011, Thomas Girard <thomas.g.girard@free.fr>
+# Copyright © 2010-2012, Thomas Girard <thomas.g.girard@free.fr>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -61,7 +61,7 @@ import DsEventLogAdmin
 import DsNotifyLogAdmin
 
 # Change this after every release.
-_version = "1.0.0"
+_version = "1.0.1"
 
 
 # -- E X C E P T I O N S -----------------------------------------------------
@@ -220,14 +220,16 @@ class RecordIterator:
 
     Attributes:
         _list     -- initial list of records
+        _offset   -- workaround TAO bug
         _iterator -- iterator to retrieve next records
-        _how_many -- how many items to fetch at once (default 50)
+        _how_many -- how many items to fetch at once (default 0: server decides)
     """
 
-    HOW_MANY = 50
+    HOW_MANY = 0
 
     def __init__(self, list, iterator, how_many=HOW_MANY):
         self._list = list
+        self._offset = len(list)
         self._iterator = iterator
         self._how_many = how_many
 
@@ -236,7 +238,7 @@ class RecordIterator:
         for record in self._list:
             yield Record(record)
 
-        # obey Python iterator protocol: do not allow anything to be returned
+        # Obey Python iterator protocol: do not allow anything to be returned
         # after StopIteration was raised
         self._list = []
 
@@ -244,12 +246,21 @@ class RecordIterator:
             position = 0
 
             while True:
-                rl = self._iterator.get(position, self._how_many)
+                try:
+                    rl = self._iterator.get(position, self._how_many)
+
+                # Work-around TAO bug in log iterators
+                except DsLogAdmin.InvalidParam:
+                    if position == 0:
+                        position = self._offset
+                        rl = self._iterator.get(position, self._how_many)
+                    else:
+                        raise
 
                 if len(rl) == 0:
-                    # we're done with the CORBA iterator, destroy it
-                    self._iterator.destroy()
-                    # and honor Python iterator protocol
+                    # We're done with the CORBA iterator; it will be
+                    # automatically destroyed on server side.
+                    # Honor Python iterator protocol.
                     self._iterator = None
                     break
 
