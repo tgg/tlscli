@@ -60,6 +60,11 @@ import DsLogAdmin
 import DsEventLogAdmin
 import DsNotifyLogAdmin
 
+try:
+    from errno import EPIPE
+except ImportError:
+    EPIPE = -1
+
 # Change this after every release.
 _version = "1.0.1"
 
@@ -747,6 +752,12 @@ if __name__ == '__main__':
 
     except TelcoLogError, e:
         die(e)
+
+    except IOError, e:
+        # Swallow EPIPE errors on platforms that support that. It makes it
+        # possible to use tlscli | less and press Q without Python stacktrace
+        if e.errno != EPIPE:
+            raise
 
 else:
     raise ImportError('the tlscli script cannot be imported')
