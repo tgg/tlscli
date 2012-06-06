@@ -183,6 +183,18 @@ def corba_call(f):
     new_f.func_name = f.func_name
     return new_f
 
+def corba_to_unix_time(timestamp):
+    # CORBA Time to UNIX time, see:
+    # http://omniorb-support.com/pipermail/omniorb-list/2007-June/028657.html
+    UNIX_TO_UTC_OFFSET_SECS = 12219292800L
+
+    sinceunix = timestamp - (UNIX_TO_UTC_OFFSET_SECS * 10000000)
+    secs = sinceunix / 10000000.0
+
+    if secs < 0:
+        return '*** bogus time: %s ***' % (timestamp)
+    else:
+        return time.ctime(secs)
 
 # -- W R A P P E R   C L A S S E S -------------------------------------------
 class Record:
@@ -195,26 +207,15 @@ class Record:
 
     FORMAT = 'id: %d\ntime: %s\ncorba-time: %d\nattributes: %s\ninfo: %s'
 
-    # CORBA Time to UNIX time, see:
-    # http://omniorb-support.com/pipermail/omniorb-list/2007-June/028657.html
-    UNIX_TO_UTC_OFFSET_SECS = 12219292800L
-
     def __init__(self, record):
         self._record = record
-
-    @staticmethod
-    def _time(timestamp):
-        sinceunix = timestamp - (Record.UNIX_TO_UTC_OFFSET_SECS * 10000000)
-        secs = sinceunix / 10000000.0
-
-        return time.ctime(secs)
 
     def __str__(self):
         attributes = '; '.join(['%s: %s' % (r.name,
                                             corba_any.from_any(r.value))
                                 for r in self._record.attr_list])
         return Record.FORMAT % (self._record.id,
-                                Record._time(self._record.time),
+                                corba_to_unix_time(self._record.time),
                                 self._record.time,
                                 '[' + attributes + ']',
                                 str(corba_any.from_any(self._record.info)))
@@ -445,14 +446,14 @@ week-mask: %s"""
         if date == 0:
             return 'now'
         else:
-            return Log._str_to_time(date)
+            return corba_to_unix_time(date)
 
     @staticmethod
     def _stop_time(date):
         if date == 0:
             return 'forever'
         else:
-            return Log._str_to_time(date)
+            return corba_to_unix_time(date)
 
     @corba_call
     def interval(self):
