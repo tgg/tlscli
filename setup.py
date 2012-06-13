@@ -46,7 +46,7 @@ class generate_corba_stubs(install):
 
 setup(
     name='tlscli',
-    version='1.0.0',
+    version='1.0.1',
     author='Thomas Girard',
     author_email='thomas.g.girard@free.fr',
     url='https://launchpad.net/tlscli',
@@ -57,7 +57,7 @@ setup(
     cmdclass={'install': generate_corba_stubs},
     requires=['dateutil.parser'],
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
         'Intended Audience :: System Administrators',
         'Intended Audience :: Telecommunications Industry',

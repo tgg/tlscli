@@ -603,7 +603,7 @@ class LogFactory:
 # -- M A I N   A N D   H E L P E R   F U N C T I O N S -----------------------
 VERSION = """TelecomLogServiceClient (tlscli) %s
 
-Copyright © 2010-2011 Thomas Girard <thomas.g.girard@free.fr>
+Copyright © 2010-2012 Thomas Girard <thomas.g.girard@free.fr>
 Hosted on: https://launchpad.net/tlscli
 Bug report: https://bugs.launchpad.net/tlscli/+filebug
 
