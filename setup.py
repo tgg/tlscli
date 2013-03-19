@@ -50,7 +50,8 @@ setup(
     author='Thomas Girard',
     author_email='thomas.g.girard@free.fr',
     url='https://launchpad.net/tlscli',
-    license='LICENSE.txt',
+    license='New BSD License',
+    url='https://launchpad.net/tlscli'
     description='Text User Interface client for CORBA Telecom Log Service.',
     long_description=open('README.txt').read(),
     scripts=['tlscli'],
