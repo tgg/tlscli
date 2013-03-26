@@ -25,7 +25,7 @@
 //specification set forth herein or having conformed any computer software to 
 //the specification. 
 //
-//This file contains OMG IDL from the Naming Service Specification, v1.2.
+//This file contains OMG IDL from the Event Service Specification, v1.2.
 //OMG regularly publishes a summary file that contains all the "code" parts of 
 //an OMG formal document. Every formal document line that is IDL, PIDL, or 
 //language code is included in the summary file. The reason for such a listing 
@@ -34,6 +34,8 @@
 //their own code, or use it for documentation purposes. Having the code lines 
 //available electronically means there is less likelihood of a transcription 
 //error. 
+#ifndef _COS_EVENT_CHANNEL_ADMIN_IDL_
+#define _COS_EVENT_CHANNEL_ADMIN_IDL_
 
 #include <CosEventComm.idl>
 
@@ -59,12 +61,26 @@ module CosEventChannelAdmin {
 			raises(AlreadyConnected, TypeError);
 	};
 
+	interface ProxyPullSupplier: CosEventComm::PullSupplier {
+		void connect_pull_consumer(
+				in CosEventComm::PullConsumer pull_consumer)
+			raises (AlreadyConnected);
+	};
+
+	interface ProxyPullConsumer: CosEventComm::PullConsumer {
+		void connect_pull_supplier(
+				in CosEventComm::PullSupplier pull_supplier)
+			raises (AlreadyConnected, TypeError);
+	};
+
 	interface ConsumerAdmin {
 		ProxyPushSupplier obtain_push_supplier();
+		ProxyPullSupplier obtain_pull_supplier();
 	};
 
 	interface SupplierAdmin {
 		ProxyPushConsumer obtain_push_consumer();
+		ProxyPullConsumer obtain_pull_consumer();
 	};
 
 	interface EventChannel {

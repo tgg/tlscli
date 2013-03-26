@@ -25,7 +25,7 @@
 //specification set forth herein or having conformed any computer software to 
 //the specification. 
 //
-//This file contains OMG IDL from the Naming Service Specification, v1.2.
+//This file contains OMG IDL from the Event Service Specification, v1.2.
 //OMG regularly publishes a summary file that contains all the "code" parts of 
 //an OMG formal document. Every formal document line that is IDL, PIDL, or 
 //language code is included in the summary file. The reason for such a listing 
@@ -56,7 +56,19 @@ module CosEventComm
 
 	interface PushSupplier 
 	{
-		void disconnect_push_supplier();										
+		void disconnect_push_supplier();
+	};
+
+	interface PullConsumer
+	{
+		void disconnect_pull_consumer();
+	};
+
+	interface PullSupplier
+	{
+		any pull() raises (Disconnected);
+		any try_pull(out boolean has_event) raises (Disconnected);
+		void disconnect_pull_supplier();
 	};
 };
 
