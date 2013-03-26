@@ -62,7 +62,7 @@ except ImportError:
     try:
         import ORBit, CORBA
         # This leaf IDL pulls all the dependencies
-        ORBit.load_file('DsNotifyLogAdmin.idl', '-I.')
+        ORBit.load_file('DsNotifyLogAdmin.idl', '-I. -D_PRE_3_0_COMPILER_')
         _using_ORBit = True
 
     except ImportError:
