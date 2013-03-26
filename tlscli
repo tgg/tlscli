@@ -119,11 +119,11 @@ class InvalidArgumentValueError(ArgumentError):
                                (name, str(value)))
 
 
-class InvalidConstraintError(ArgumentError):
+class InvalidConstraintError(TelcoLogError):
     """Raised when a constraint is not valid."""
 
     def __init__(self, constraint):
-        ArgumentError.__init__(self, 'invalid constraint: %s' % (constraint))
+        TelcoLogError.__init__(self, 'invalid constraint: %s' % (constraint))
 
 
 class ObjectReferenceError(TelcoLogError):
