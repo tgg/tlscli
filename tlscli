@@ -52,13 +52,37 @@
 
 import time
 import sys
-from omniORB import CORBA, any as corba_any
+
+_using_ORBit = False
+
+try:
+    from omniORB import CORBA
+
+except ImportError:
+    try:
+        import ORBit, CORBA
+        # This leaf IDL pulls all the dependencies
+        ORBit.load_file('DsNotifyLogAdmin.idl', '-I. -D_PRE_3_0_COMPILER_')
+        _using_ORBit = True
+
+    except ImportError:
+        die('missing dependency omniORBpy or PyORBit')
+
 import dateutil.parser
 from datetime import datetime
 
 import DsLogAdmin
 import DsEventLogAdmin
 import DsNotifyLogAdmin
+
+# It seems constants are not generated when using ORBit.load_file, so add the
+# ones we use manually
+if _using_ORBit:
+    DsLogAdmin.wrap = 0
+    DsLogAdmin.halt = 1
+    DsLogAdmin.QoSNone = 0
+    DsLogAdmin.QoSFlush = 1
+    DsLogAdmin.QoSReliability = 2
 
 try:
     from errno import EPIPE
@@ -196,6 +220,13 @@ def corba_to_unix_time(timestamp):
     else:
         return time.ctime(secs)
 
+def to_any(s):
+    return CORBA.Any(CORBA.TC_string, str(s))
+
+def from_any(a):
+    return str(a.value())
+
+
 # -- W R A P P E R   C L A S S E S -------------------------------------------
 class Record:
     """Wrap a DsLogAdmin::LogRecord object reference.
@@ -212,13 +243,13 @@ class Record:
 
     def __str__(self):
         attributes = '; '.join(['%s: %s' % (r.name,
-                                            corba_any.from_any(r.value))
+                                            from_any(r.value))
                                 for r in self._record.attr_list])
         return Record.FORMAT % (self._record.id,
                                 corba_to_unix_time(self._record.time),
                                 self._record.time,
                                 '[' + attributes + ']',
-                                str(corba_any.from_any(self._record.info)))
+                                str(from_any(self._record.info)))
 
 
 class RecordIterator:
@@ -383,9 +414,9 @@ week-mask: %s"""
     @corba_call
     def write(self, content):
         if isinstance(content, (tuple, list)):
-            array = map(lambda x: corba_any.to_any(x), content)
+            array = map(lambda x: to_any(x), content)
         else:
-            array = [corba_any.to_any(content)]
+            array = [to_any(content)]
 
         try:
             self._log.write_records(array)
@@ -654,10 +685,29 @@ def all_digits(sequence, what):
 
     return digits
 
+def drop_ORB_args(sequence):
+    # Remove simple -ORB arguments as well as -ORBInitRef key/value pairs
+    seq = []
+    skip_next = False
+
+    for arg in sequence:
+        if arg == '-ORBInitRef':
+            skip_next = True
+        else:
+            if not arg.startswith('-ORB') and not skip_next:
+                seq.append(arg)
+            skip_next = False
+
+    return seq
+
 
 if __name__ == '__main__':
     # Initialize the ORB
-    orb = CORBA.ORB_init(sys.argv, CORBA.ORB_ID)
+    orb = CORBA.ORB_init(sys.argv)
+
+    # ORBit does not eat -ORB args, so let's do it ourselves
+    if _using_ORBit:
+        sys.argv = drop_ORB_args(sys.argv)
 
     # No default operation
     if len(sys.argv) == 1:
