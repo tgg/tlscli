@@ -35,40 +35,43 @@
 //available electronically means there is less likelihood of a transcription 
 //error. 
 
-#include <CosEventComm.idl> 
-#pragma prefix "omg.org" 
-module CosEventChannelAdmin { 
+#include <CosEventComm.idl>
+
+#pragma prefix "omg.org"
+
+module CosEventChannelAdmin {
 # ifndef _PRE_3_0_COMPILER_
-    typeprefix "omg.org";
+	typeprefix "omg.org";
 # endif // _PRE_3_0_COMPILER_
 
- 	exception AlreadyConnected {}; 
-	exception TypeError {}; 
+	exception AlreadyConnected {};
+	exception TypeError {};
 
-	interface ProxyPushConsumer: CosEventComm::PushConsumer { 
-		void connect_push_supplier( 
-				in CosEventComm::PushSupplier push_supplier) 
-			raises(AlreadyConnected); 
-	}; 
+	interface ProxyPushConsumer: CosEventComm::PushConsumer {
+		void connect_push_supplier(
+				in CosEventComm::PushSupplier push_supplier)
+			raises(AlreadyConnected);
+	};
 
-	interface ProxyPushSupplier: CosEventComm::PushSupplier { 
-		void connect_push_consumer( 
-				in CosEventComm::PushConsumer push_consumer) 
-			raises(AlreadyConnected, TypeError); 
-	}; 
+	interface ProxyPushSupplier: CosEventComm::PushSupplier {
+		void connect_push_consumer(
+				in CosEventComm::PushConsumer push_consumer)
+			raises(AlreadyConnected, TypeError);
+	};
 
-	interface ConsumerAdmin { 
-		ProxyPushSupplier obtain_push_supplier(); 
-	}; 
+	interface ConsumerAdmin {
+		ProxyPushSupplier obtain_push_supplier();
+	};
 
-	interface SupplierAdmin { 
-		ProxyPushConsumer obtain_push_consumer(); 
-	}; 
+	interface SupplierAdmin {
+		ProxyPushConsumer obtain_push_consumer();
+	};
 
-	interface EventChannel { 
-		ConsumerAdmin for_consumers(); 
-		SupplierAdmin for_suppliers(); 
-		void destroy(); 
-	}; 
-}; 
-#endif /* ifndef _COS_EVENT_CHANNEL_ADMIN_IDL_ */ 
+	interface EventChannel {
+		ConsumerAdmin for_consumers();
+		SupplierAdmin for_suppliers();
+		void destroy();
+	};
+};
+
+#endif /* ifndef _COS_EVENT_CHANNEL_ADMIN_IDL_ */

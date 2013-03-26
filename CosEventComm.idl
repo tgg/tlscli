@@ -35,48 +35,29 @@
 //available electronically means there is less likelihood of a transcription 
 //error. 
 
-#ifndef _COS_EVENT_COMM_IDL_ 
-#define _COS_EVENT_COMM_IDL_ 
-#pragma prefix "omg.org"  
-module CosEventComm 
-{ 
-	# ifndef _PRE_3_0_COMPILER_
-    		typeprefix "omg.org";
-	# endif // _PRE_3_0_COMPILER_
+#ifndef _COS_EVENT_COMM_IDL_
+#define _COS_EVENT_COMM_IDL_
 
-	exception Disconnected{};  
+#pragma prefix "omg.org"
+
+module CosEventComm
+{
+# ifndef _PRE_3_0_COMPILER_
+	typeprefix "omg.org";
+# endif // _PRE_3_0_COMPILER_
+
+	exception Disconnected {};
 
 	interface PushConsumer 
 	{
 		void push (in any data) raises(Disconnected);
 		void disconnect_push_consumer(); 
-	}; 
+	};
 
-   interface PushSupplier 
+	interface PushSupplier 
 	{
 		void disconnect_push_supplier();										
-	}; 
-}; 
+	};
+};
+
 #endif /* ifndef _COS_EVENT_COMM_IDL_ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
