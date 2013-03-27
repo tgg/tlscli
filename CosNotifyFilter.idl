@@ -38,6 +38,11 @@
 
 #include <CosNotifyComm.idl>
 
+/* Hack for ORBit.load_file */
+#ifndef __ORBIT_IDL__
+#define TypeCode CORBA::TypeCode
+#endif
+
 #pragma prefix "omg.org"
 
 module CosNotifyFilter {
@@ -136,7 +141,7 @@ interface MappingFilter {
 
 readonly attribute string constraint_grammar;
 
-readonly attribute /*CORBA::*/TypeCode value_type;
+readonly attribute TypeCode value_type;
 
 readonly attribute any default_value;
 
