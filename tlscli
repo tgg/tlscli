@@ -53,17 +53,35 @@
 import time
 import sys
 
+def die(reason, error_code=1, help=False):
+    print >> sys.stderr, 'tlscli: %s' % (str(reason))
+    if help:
+        print HELP
+    sys.exit(error_code)
+
+def _v(tuple_version):
+    return '.'.join(map(str, tuple_version))
+
+
+# -- D Y N A M I C   S T U B   G E N E R A T I O N ---------------------------
+
+# We try omniORB first, then ORBit. Then we use the ORB specific mechanism to
+# load a single IDL file: DsNotifyLogAdmin.idl. This IDL pulls all the others.
 _using_ORBit = False
 
 try:
-    from omniORB import CORBA
+    import omniORB, CORBA
+    omniORB.importIDL('DsNotifyLogAdmin.idl', ['-I.', '-D_PRE_3_0_COMPILER_'])
+    _orb_version = 'omniORBpy %s on omniORB %s' % (omniORB.__version__,
+                                                   omniORB.coreVersion())
 
 except ImportError:
     try:
         import ORBit, CORBA
-        # This leaf IDL pulls all the dependencies
         ORBit.load_file('DsNotifyLogAdmin.idl', '-I. -D_PRE_3_0_COMPILER_')
         _using_ORBit = True
+        _orb_version = 'PyORBit %s on ORBit2 %s' % (_v(ORBit.__version__),
+                                                    _v(ORBit.orbit_version))
 
     except ImportError:
         die('missing dependency omniORBpy or PyORBit')
@@ -207,6 +225,8 @@ def corba_call(f):
     new_f.func_name = f.func_name
     return new_f
 
+
+# -- C O R B A   U T I L I T Y   F U N C T I O N S ---------------------------
 def corba_to_unix_time(timestamp):
     # CORBA Time to UNIX time, see:
     # http://omniorb-support.com/pipermail/omniorb-list/2007-June/028657.html
@@ -670,13 +690,6 @@ For more information on the CORBA Telecom Log Service, see:
 SEPARATOR = '-' * 78
 
 
-def die(reason, error_code=1, help=False):
-    print >> sys.stderr, 'tlscli: %s' % (str(reason))
-    if help:
-        print HELP
-    sys.exit(error_code)
-
-
 def all_digits(sequence, what):
     digits = filter(lambda x: x.isdigit(), sequence)
 
@@ -721,6 +734,7 @@ if __name__ == '__main__':
 
         elif sys.argv[1] in ['version', '-v', '-version', '--version']:
             print VERSION
+            print 'Using:', _orb_version
             sys.exit(0)
 
         elif sys.argv[1] == 'list':
