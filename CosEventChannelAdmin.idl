@@ -34,6 +34,7 @@
 //their own code, or use it for documentation purposes. Having the code lines 
 //available electronically means there is less likelihood of a transcription 
 //error. 
+
 #ifndef _COS_EVENT_CHANNEL_ADMIN_IDL_
 #define _COS_EVENT_CHANNEL_ADMIN_IDL_
 

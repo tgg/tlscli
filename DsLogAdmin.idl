@@ -30,7 +30,11 @@
 //
 //DsLogAdmin Module
 
+#ifndef _DS_LOG_ADMIN_IDL_
+#define _DS_LOG_ADMIN_IDL_
+
 #include <TimeBase.idl> // CORBA Time Service
+
 #pragma prefix "omg.org"
 
 module DsLogAdmin
@@ -278,3 +282,5 @@ module DsLogAdmin
 	};
 
 };
+
+#endif

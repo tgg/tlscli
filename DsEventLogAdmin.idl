@@ -30,8 +30,12 @@
 //
 //DsEventLogAdmin Module
 
+#ifndef _DS_EVENT_LOG_ADMIN_IDL_
+#define _DS_EVENT_LOG_ADMIN_IDL_
+
 #include <CosEventChannelAdmin.idl> // CORBA Event Service
 #include <DsLogAdmin.idl>
+
 #pragma prefix "omg.org"
 
 module DsEventLogAdmin
@@ -60,3 +64,5 @@ module DsEventLogAdmin
 				DsLogAdmin::InvalidThreshold);
 	};
 };
+
+#endif

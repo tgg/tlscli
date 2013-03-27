@@ -30,10 +30,14 @@
 //
 //DsNotifyLogAdmin Module
 
+#ifndef _DS_NOTIFY_LOG_ADMIN_IDL_
+#define _DS_NOTIFY_LOG_ADMIN_IDL_
+
 #include <DsEventLogAdmin.idl>
 #include <CosNotifyChannelAdmin.idl>
 #include <CosNotifyFilter.idl>
 #include <CosNotification.idl>
+
 #pragma prefix "omg.org"
 
 module DsNotifyLogAdmin
@@ -76,3 +80,5 @@ module DsNotifyLogAdmin
 			CosNotification::UnsupportedAdmin);
 	};
 };
+
+#endif
