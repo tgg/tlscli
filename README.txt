@@ -74,8 +74,8 @@ Prerequisites
 
 To install ``tlscli``, you need:
  * a working installation of
-   `omniORBpy <http://omniorb.sourceforge.net/>`_. Indeed CORBA stubs are
-   generated at install time.
+   `omniORBpy <http://omniorb.sourceforge.net/>`_, or a working installation of
+   `PyORBit <https://github.com/GNOME/pyorbit>`_.
  * `python-dateutil <http://niemeyer.net/python-dateutil>`_
 
 To proceed to installation, run the following command from where you unpacked
@@ -83,7 +83,7 @@ To proceed to installation, run the following command from where you unpacked
 
   me@mymachine$ python setup.py install --user
 
-This will automatically compile stubs, and install everything into
+This will automatically install everything needed into
 your ``$HOME/.local`` (``tlscli`` itself will be in ``$HOME/.local/bin``).
 
 To run ``tlscli``, you need a Telecom Log Service running somewhere.
