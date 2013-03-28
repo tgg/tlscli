@@ -50,8 +50,9 @@
 
 """tlscli -- A Text User Interface client for CORBA Telecom Log Service"""
 
-import time
+import os
 import sys
+import time
 
 
 def die(reason, error_code=1, help=False):
@@ -70,17 +71,19 @@ def _v(tuple_version):
 # We try omniORB first, then ORBit. Then we use the ORB specific mechanism to
 # load a single IDL file: DsNotifyLogAdmin.idl. This IDL pulls all the others.
 _using_ORBit = False
+_idl_dir = os.path.join(os.path.dirname(sys.argv[0]), 'idl')
+_idl_file = os.path.join(_idl_dir, 'DsNotifyLogAdmin.idl')
 
 try:
     import omniORB
-    omniORB.importIDL('DsNotifyLogAdmin.idl', ['-I.', '-D_PRE_3_0_COMPILER_'])
+    omniORB.importIDL(_idl_file, ['-I' + _idl_dir, '-D_PRE_3_0_COMPILER_'])
     _orb_version = 'omniORBpy %s on omniORB %s' % (omniORB.__version__,
                                                    omniORB.coreVersion())
 
 except ImportError:
     try:
         import ORBit
-        ORBit.load_file('DsNotifyLogAdmin.idl', '-I. -D_PRE_3_0_COMPILER_')
+        ORBit.load_file(_idl_file, '-I' + _idl_dir + ' -D_PRE_3_0_COMPILER_')
         _using_ORBit = True
         _orb_version = 'PyORBit %s on ORBit2 %s' % (_v(ORBit.__version__),
                                                     _v(ORBit.orbit_version))
