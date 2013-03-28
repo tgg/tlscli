@@ -71,7 +71,12 @@ def _v(tuple_version):
 # We try omniORB first, then ORBit. Then we use the ORB specific mechanism to
 # load a single IDL file: DsNotifyLogAdmin.idl. This IDL pulls all the others.
 _using_ORBit = False
-_idl_dir = os.path.join(os.path.dirname(sys.argv[0]), 'idl')
+_top_dir = os.path.dirname(sys.argv[0])
+if _top_dir.endswith('bin'):
+    _top_dir = os.path.dirname(_top_dir)
+    _idl_dir = os.path.join(_top_dir, 'share/idl/tlscli')
+else:
+    _idl_dir = os.path.join(_top_dir, 'idl')
 _idl_file = os.path.join(_idl_dir, 'DsNotifyLogAdmin.idl')
 
 try:
