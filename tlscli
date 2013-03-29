@@ -663,8 +663,10 @@ class LogFactory:
         try:
             obj = orb.resolve_initial_references('LogMgr')
             log_mgr = obj._narrow(DsLogAdmin.LogMgr)
-        except (CORBA.BAD_PARAM, TypeError):
+        except CORBA.BAD_PARAM:
             raise TelcoLogError('cannot resolve LogMgr initial reference')
+        except TypeError:
+            log_mgr = None
 
         return LogFactory(log_mgr, orb)
 
