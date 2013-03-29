@@ -615,8 +615,13 @@ class LogFactory:
 
     @corba_call
     def create(self, max_size=0, wrap=True, thresholds=[100]):
+        logfactory = None
+
         for name, cls in LogFactory.SUPPORTED_FACTORIES.iteritems():
-            logfactory = self._logmgr._narrow(cls)
+            try:
+                logfactory = self._logmgr._narrow(cls)
+            except TypeError:
+                continue
 
             if logfactory is not None:
                 break
@@ -658,7 +663,7 @@ class LogFactory:
         try:
             obj = orb.resolve_initial_references('LogMgr')
             log_mgr = obj._narrow(DsLogAdmin.LogMgr)
-        except CORBA.BAD_PARAM:
+        except (CORBA.BAD_PARAM, TypeError):
             raise TelcoLogError('cannot resolve LogMgr initial reference')
 
         return LogFactory(log_mgr, orb)
